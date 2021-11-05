@@ -2,8 +2,8 @@
   <section id="home">
     <h1 class="py-2">Mastermind</h1>
     <div id="score">
-      <h2 v-if="nbCorrect === 4">GAGNE</h2>
-      <h2 v-if="selectedRow > 9">PERDU</h2>
+      <h2 v-if="win">GAGNE</h2>
+      <h2 v-if="selectedRow === 10">PERDU</h2>
     </div>
       
     <b-row id="home-wrapper">
@@ -11,7 +11,7 @@
         <b-card 
           class="one-row"
           v-for="(one, index) in grille"
-          :key="index"
+          :key="`r-${index}`"
           no-body
         >
           <b-card 
@@ -20,18 +20,18 @@
           >
             <div
               class="one-cell"
-              v-for="(one2, index2) in one"
-              :key="index2"
+              v-for="(one2, index2) in one.data"
+              :key="`c-${index2}`"
             >
               <div
                 class="pion"
                 :class="{
                           target: selectedRow === index && selectedColumn === index2,
                           idle: selectedRow === index,
-                          red: grille[index][index2] === 0,
-                          blue: grille[index][index2] === 1,
-                          green: grille[index][index2] === 2,
-                          orange: grille[index][index2] === 3
+                          red: one.data[index2] === 0,
+                          blue: one.data[index2] === 1,
+                          green: one.data[index2] === 2,
+                          orange: one.data[index2] === 3
                         }"
                 @click="chooseCell(index, index2)"
               ></div>
@@ -39,38 +39,22 @@
 
             <div class="marker">
               <span
-                class="pion-marker mx-1"
-                :class="{
-                          incorrect: false,
-                          wrong: false,
-                          correct: true
-                        }"
+                v-for="(i, index3) in markersList[index].correct"
+                :key="`c-${index3}`"
+                class="pion-marker mx-1 correct"
               ></span>
               <span
-                class="pion-marker mx-1"
-                :class="{
-                          incorrect: false,
-                          wrong: false,
-                          correct: true
-                        }"
+                v-for="(j, index4) in markersList[index].wrong"
+                :key="`w-${index4}`"
+                class="pion-marker mx-1 wrong"
               ></span>
               <span
-                class="pion-marker mx-1"
-                :class="{
-                          incorrect: false,
-                          wrong: false,
-                          correct: true
-                        }"
-              ></span>
-              <span
-                class="pion-marker mx-1"
-                :class="{
-                          incorrect: false,
-                          wrong: false,
-                          correct: true
-                        }"
+                v-for="(k, index5) in markersList[index].incorrect"
+                :key="`i-${index5}`"
+                class="pion-marker mx-1 incorrect"
               ></span>
             </div>
+          
           </b-card>
         </b-card>
 
@@ -108,7 +92,7 @@
               class="w-100"
               variant="primary"
               @click="submitLine()"
-              :disabled="selectedColumn < 4 || !this.isPlaying"
+              :disabled="disableBtn()"
             >
               Valider
             </b-button>
@@ -138,22 +122,28 @@ export default {
     return {
       colorsList: ["red", "blue", "green", "orange"],
       grille: [],
-      selectedX: 0,
-      selectedY: 0,
       isPlaying: true,
       soluce: [],
-      nbWrongPlace: 0,
-      nbIncorrect: 0,
-      nbCorrect: 0,
       selectedRow: 0,
       selectedColumn: 0,
-      selectedColor: ''
+      selectedColor: '',
+      win: false,
+      markersList: []
     };
   },
   created: function () {
     this.init();
   },
+  computed: {
+  },
   methods: {
+    disableBtn: function () {
+      if (this.selectedRow < 10) {
+        return this.grille[this.selectedRow].data[3] === -1 || !this.isPlaying;
+      } else {
+        return !this.isPlaying;
+      }
+    },
     init: function () {
       /*
         rouge: 0
@@ -161,18 +151,21 @@ export default {
         vert: 2
         orange: 3
       */
-      this.grille = [
-        [-1, -1, -1, -1],
-        [-1, -1, -1, -1],
-        [-1, -1, -1, -1],
-        [-1, -1, -1, -1],
-        [-1, -1, -1, -1],
-        [-1, -1, -1, -1],
-        [-1, -1, -1, -1],
-        [-1, -1, -1, -1],
-        [-1, -1, -1, -1],
-        [-1, -1, -1, -1]
-      ];
+
+      for (let i = 0; i < 10; i++) {
+        this.grille.push({
+          data: []
+        });
+        this.markersList.push({
+          correct: 0,
+          wrong: 0,
+          incorrect: 0
+        });
+
+        for (let j = 0; j < 4; j++) {
+          this.grille[i].data.push(-1);
+        }
+      }
       this.soluce = [1, 2, 1, 2];
     },
     chooseCell: function (index, index2) {
@@ -184,7 +177,7 @@ export default {
       this.selectedColor = color;
 
       if (this.selectedColumn < 4) {
-        this.grille[this.selectedRow][this.selectedColumn] = color;
+        this.grille[this.selectedRow].data[this.selectedColumn] = color;
         this.selectedColumn++;
       }
     },
@@ -207,38 +200,20 @@ export default {
         - La couleur n'est pas dans la liste
       */
 
-      this.nbCorrect = 0;
-      this.nbWrongPlace = 0;
-      this.nbIncorrect = 0;
-
       for (var i = 0; i < 4; ++i) {
-        if (this.grille[this.selectedRow][i] === this.soluce[i]) {
-          this.nbCorrect++;
-        } else if (this.soluce.indexOf(this.grille[this.selectedRow][i]) >= 0) {
-          this.nbWrongPlace++;
+        if (this.grille[this.selectedRow].data[i] === this.soluce[i]) {
+          this.markersList[this.selectedRow].correct++;
+        } else if (this.soluce.indexOf(this.grille[this.selectedRow].data[i]) >= 0) {
+          this.markersList[this.selectedRow].wrong++;
         }else {
-          this.nbIncorrect++;
+          this.markersList[this.selectedRow].incorrect++;
         }
       }
 
-      if (this.nbCorrect === 4) {
+      if (this.markersList[this.selectedRow].correct === 4) {
         this.isPlaying = false;
+        this.win = true;
       }
-
-      // const td = tr.getElementsByClassName("board-col").item(5);
-      // for (var j = 0; j < this.nbWrongPlace; ++j) {
-      //   td.innerHTML += '<span class="pion mx-1 red"></span>';
-      // }
-
-      // for (var k = 0; k < this.nbIncorrect; ++k) {
-      //   td.innerHTML += '<span class="pion mx-1 black"></span>';
-      // }
-
-      // for (var l = 0; l < this.nbCorrect; ++l) {
-      //   td.innerHTML += '<span class="pion mx-1 green"></span>';
-      // }
-
-      // return { wrong: nbWrongPlace, incorrect: nbIncorrect };
     },
   },
 };
@@ -281,6 +256,18 @@ export default {
 
 .orange {
   background: orange;
+}
+
+.correct {
+  background: white;
+}
+
+.wrong {
+  background: grey;
+}
+
+.incorrect {
+  background: black;
 }
 
 .card {
