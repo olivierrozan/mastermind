@@ -3,7 +3,7 @@
     <h1 class="py-2">Mastermind</h1>
     <div id="score">
       <h2 v-if="nbCorrect === 4">GAGNE</h2>
-      <h2 v-if="currentLine > 9">PERDU</h2>
+      <h2 v-if="selectedRow > 9">PERDU</h2>
     </div>
       
     <b-row id="home-wrapper">
@@ -38,7 +38,38 @@
             </div>
 
             <div class="marker">
-              y
+              <span
+                class="pion-marker mx-1"
+                :class="{
+                          incorrect: false,
+                          wrong: false,
+                          correct: true
+                        }"
+              ></span>
+              <span
+                class="pion-marker mx-1"
+                :class="{
+                          incorrect: false,
+                          wrong: false,
+                          correct: true
+                        }"
+              ></span>
+              <span
+                class="pion-marker mx-1"
+                :class="{
+                          incorrect: false,
+                          wrong: false,
+                          correct: true
+                        }"
+              ></span>
+              <span
+                class="pion-marker mx-1"
+                :class="{
+                          incorrect: false,
+                          wrong: false,
+                          correct: true
+                        }"
+              ></span>
             </div>
           </b-card>
         </b-card>
@@ -77,7 +108,7 @@
               class="w-100"
               variant="primary"
               @click="submitLine()"
-              :disabled="selectedColumn < 4"
+              :disabled="selectedColumn < 4 || !this.isPlaying"
             >
               Valider
             </b-button>
@@ -106,7 +137,6 @@ export default {
   data: function () {
     return {
       colorsList: ["red", "blue", "green", "orange"],
-      currentLine: 0,
       grille: [],
       selectedX: 0,
       selectedY: 0,
@@ -124,14 +154,6 @@ export default {
     this.init();
   },
   methods: {
-    disableBtn: function () {
-      // console.log(this.grille[this.currentLine][0]);
-      return this.currentLine > 9 ||
-        this.grille[this.currentLine][0] === -1 ||
-        this.grille[this.currentLine][1] === -1 ||
-        this.grille[this.currentLine][2] === -1 ||
-        this.grille[this.currentLine][3] === -1;
-    },
     init: function () {
       /*
         rouge: 0
@@ -165,60 +187,56 @@ export default {
         this.grille[this.selectedRow][this.selectedColumn] = color;
         this.selectedColumn++;
       }
-      // this.selectedX = i;
-      // this.selectedY = j;
-      // const table = document.getElementById("board-table");
-      // const tr = table
-      //   .getElementsByClassName("board-row")
-      //   .item(this.currentLine);
-      // const td = tr.getElementsByClassName("board-col").item(this.selectedY);
-      // td.style.backgroundColor = this.colorsList[this.selectedX];
-      // this.grille[this.currentLine][this.selectedY] = this.selectedX;
     },
     submitLine: function () {
-      // this.checkSoluce();
-      this.selectedRow++;
-      this.selectedColumn = 0;
+      this.checkSoluce();
+
+      if (this.isPlaying) {
+        this.selectedRow++;
+        this.selectedColumn = 0;
+      }
 
       if (this.selectedRow > 9) {
         this.isPlaying = false;
       }
     },
     checkSoluce: function () {
+      /*
+        - La couleur est à la bonne place
+        - La couleur à la mauvaise place, mais elle est dans la liste
+        - La couleur n'est pas dans la liste
+      */
+
       this.nbCorrect = 0;
       this.nbWrongPlace = 0;
       this.nbIncorrect = 0;
-      const table = document.getElementById("board-table");
-      const tr = table
-        .getElementsByClassName("board-row")
-        .item(this.currentLine);      
 
       for (var i = 0; i < 4; ++i) {
-        if (this.grille[this.currentLine][i + 1] === this.soluce[i]) {
+        if (this.grille[this.selectedRow][i] === this.soluce[i]) {
           this.nbCorrect++;
-        } else if (this.soluce.indexOf(this.grille[this.currentLine][i + 1]) >= 0) {
+        } else if (this.soluce.indexOf(this.grille[this.selectedRow][i]) >= 0) {
           this.nbWrongPlace++;
-        } else {
+        }else {
           this.nbIncorrect++;
         }
-      }
-
-      const td = tr.getElementsByClassName("board-col").item(5);
-      for (var j = 0; j < this.nbWrongPlace; ++j) {
-        td.innerHTML += '<span class="pion mx-1 red"></span>';
-      }
-
-      for (var k = 0; k < this.nbIncorrect; ++k) {
-        td.innerHTML += '<span class="pion mx-1 black"></span>';
-      }
-
-      for (var l = 0; l < this.nbCorrect; ++l) {
-        td.innerHTML += '<span class="pion mx-1 green"></span>';
       }
 
       if (this.nbCorrect === 4) {
         this.isPlaying = false;
       }
+
+      // const td = tr.getElementsByClassName("board-col").item(5);
+      // for (var j = 0; j < this.nbWrongPlace; ++j) {
+      //   td.innerHTML += '<span class="pion mx-1 red"></span>';
+      // }
+
+      // for (var k = 0; k < this.nbIncorrect; ++k) {
+      //   td.innerHTML += '<span class="pion mx-1 black"></span>';
+      // }
+
+      // for (var l = 0; l < this.nbCorrect; ++l) {
+      //   td.innerHTML += '<span class="pion mx-1 green"></span>';
+      // }
 
       // return { wrong: nbWrongPlace, incorrect: nbIncorrect };
     },
@@ -230,6 +248,13 @@ export default {
 .pion {
   width: 25px;
   height: 25px;
+  display: inline-block;
+  border-radius: 100%;
+}
+
+.pion-marker {
+  width: 10px;
+  height: 10px;
   display: inline-block;
   border-radius: 100%;
 }
@@ -269,6 +294,10 @@ export default {
 #home {
   h1 {
     background: burlywood;
+  }
+
+  h2 {
+    color: white;
   }
 
   #score {
