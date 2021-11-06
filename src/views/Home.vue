@@ -186,6 +186,7 @@ export default {
   },
   methods: {
     disableBtn: function () {
+      // Désactive le bouton "valider"
       if (this.selectedRow < 10) {
         return this.grille[this.selectedRow].data[3] === -1 || !this.isPlaying;
       } else {
@@ -194,6 +195,7 @@ export default {
     },
     init: function () {
       /*
+        Initialise la partie
         rouge: 0
         bleu: 1
         vert: 2
@@ -219,19 +221,31 @@ export default {
         }
       }
 
-      this.soluce = [1, 2, 1, 2];
+      this.initSoluce();
       this.isPlaying = true;
       this.selectedRow = 0;
       this.selectedColumn = 0;
       this.selectedColor = '';
       this.win = false;
     },
+    initSoluce: function () {
+      // Génère le code à trouver
+      const min = Math.ceil(0);
+      const max = Math.floor(3);
+
+      for (let i = 0; i < 4; i++) {
+        const nb = Math.floor(Math.random() * (max - min + 1)) + min;
+        this.soluce.push(nb);
+      }
+    },
     chooseCell: function (index, index2) {
+      // Affecte la cellule sélectionnée
       if (this.selectedRow === index) {
         this.selectedColumn = index2;
       }
     },
     chooseColor: function (color) {
+      // Affecte la couleur sélectionné
       this.selectedColor = color;
 
       if (this.selectedColumn < 4) {
@@ -240,6 +254,7 @@ export default {
       }
     },
     submitLine: function () {
+      // Clic sur "valider"
       this.checkSoluce();
 
       if (this.isPlaying) {
@@ -253,6 +268,7 @@ export default {
     },
     checkSoluce: function () {
       /*
+        Compare le code proposé avec le code à trouver
         - La couleur est à la bonne place
         - La couleur à la mauvaise place, mais elle est dans la liste
         - La couleur n'est pas dans la liste
@@ -301,19 +317,19 @@ export default {
 }
 
 .red {
-  background: red;
+  background: #dc3545;
 }
 
 .green {
-  background: green;
+  background: #28a745;
 }
 
 .blue {
-  background: blue;
+  background: #007bff;
 }
 
 .orange {
-  background: orange;
+  background: #ffc107;
 }
 
 .correct {
@@ -375,12 +391,12 @@ export default {
       
       #soluce {
         h3 {
-          color: green;
+          color: #28a745;
         }
 
         .card {
-          border-top: 1px solid green !important;
-          border-bottom: 1px solid green !important;
+          border-top: 1px solid #28a745 !important;
+          border-bottom: 1px solid #28a745 !important;
         }
       }
       
