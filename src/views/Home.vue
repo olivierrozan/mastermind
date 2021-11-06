@@ -2,12 +2,42 @@
   <section id="home">
     <h1 class="py-2">Mastermind</h1>
     <div id="score">
-      <h2 v-if="win">GAGNE</h2>
-      <h2 v-if="selectedRow === 10">PERDU</h2>
+      <h2 v-show="win">GAGNE</h2>
+      <h2 v-show="selectedRow === 10">PERDU</h2>
     </div>
       
     <b-row id="home-wrapper">
       <b-col id="board" class="m-auto" cols="4">
+        <div id="soluce" v-show="selectedRow === 10">
+          <h3>Soluce</h3>
+          <b-card 
+            class="one-row my-2"
+            no-body
+          >
+            <b-card 
+              class="one-column"
+              no-body
+            >
+              <div
+                class="one-cell"
+                v-for="(one9, index9) in soluce"
+                :key="`soluce-${index9}`"
+              >
+                <div
+                  class="pion"
+                  :class="{
+                            red: one9 === 0,
+                            blue: one9 === 1,
+                            green: one9 === 2,
+                            orange: one9 === 3
+                          }"
+                ></div>
+              </div>
+            
+            </b-card>
+          </b-card>
+        </div>
+        
         <b-card 
           class="one-row"
           v-for="(one, index) in grille"
@@ -283,7 +313,8 @@ export default {
     background: burlywood;
   }
 
-  h2 {
+  h2,
+  h3 {
     color: white;
   }
 
@@ -296,6 +327,17 @@ export default {
     padding: 0;
 
     #board {
+      #soluce {
+        h3 {
+          color: green;
+        }
+
+        .card {
+          border-top: 1px solid green !important;
+          border-bottom: 1px solid green !important;
+        }
+      }
+      
       .one-row {
         .one-column {
           flex-direction: row !important;
@@ -323,11 +365,13 @@ export default {
         .one-cell {
           margin-top: 10px;
           width: 20%;
+        }
+      }
 
-          .pion {
-            &:hover {
-              cursor: pointer;
-            }
+      #pattern {
+        .pion {
+          &:hover {
+            cursor: pointer;
           }
         }
       }
