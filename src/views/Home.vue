@@ -188,7 +188,13 @@ export default {
     disableBtn: function () {
       // Désactive le bouton "valider"
       if (this.selectedRow < 10) {
-        return this.grille[this.selectedRow].data[3] === -1 || !this.isPlaying;
+        return (
+          this.grille[this.selectedRow].data[0] === -1
+          || this.grille[this.selectedRow].data[1] === -1
+          || this.grille[this.selectedRow].data[2] === -1
+          || this.grille[this.selectedRow].data[3] === -1
+        )
+          || !this.isPlaying;
       } else {
         return !this.isPlaying;
       }
@@ -242,6 +248,7 @@ export default {
       // Affecte la cellule sélectionnée
       if (this.selectedRow === index) {
         this.selectedColumn = index2;
+        // this.grille[this.selectedRow].data[this.selectedColumn] = -1;
       }
     },
     chooseColor: function (color) {
@@ -249,8 +256,22 @@ export default {
       this.selectedColor = color;
 
       if (this.selectedColumn < 4) {
-        this.grille[this.selectedRow].data[this.selectedColumn] = color;
+        this.grille[this.selectedRow].data[this.selectedColumn] = this.selectedColor;
         this.selectedColumn++;
+
+        if (this.grille[this.selectedRow].data[this.selectedColumn + 1] !== -1) {
+          this.selectedColumn = -1;
+        }
+
+        if (this.grille[this.selectedRow].data[0] === -1) {
+          this.selectedColumn = 0;
+        } else if (this.grille[this.selectedRow].data[1] === -1) {
+          this.selectedColumn = 1;
+        } else if (this.grille[this.selectedRow].data[2] === -1) {
+          this.selectedColumn = 2;
+        } else if (this.grille[this.selectedRow].data[3] === -1) {
+          this.selectedColumn = 3;
+        }
       }
     },
     submitLine: function () {
@@ -313,7 +334,7 @@ export default {
 }
 
 .target {
-  background: white;
+  background: white !important;
 }
 
 .red {
