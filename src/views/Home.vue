@@ -1,10 +1,20 @@
 <template>
   <section id="home">
     <h1 class="py-2">Mastermind</h1>
-    <div id="score">
-      <h2 v-show="win">GAGNE</h2>
-      <h2 v-show="selectedRow === 10">PERDU</h2>
-    </div>
+    <span id="score" class="d-inline-block">
+      <h2>
+        <span v-show="win">GAGNE</span>
+        <span v-show="selectedRow === 10">PERDU</span>
+        <b-button
+          v-if="!isPlaying"
+          class="mt-2 ml-2 d-inline-block"
+          variant="primary"
+          @click="init()"
+        >
+          Rejouer
+        </b-button>
+      </h2>
+    </span>
       
     <b-row id="home-wrapper">
       <b-col id="board" class="m-auto" cols="4">
@@ -182,6 +192,10 @@ export default {
         orange: 3
       */
 
+     this.grille = [];
+     this.soluce = [];
+     this.markersList = [];
+
       for (let i = 0; i < 10; i++) {
         this.grille.push({
           data: []
@@ -196,7 +210,13 @@ export default {
           this.grille[i].data.push(-1);
         }
       }
+
       this.soluce = [1, 2, 1, 2];
+      this.isPlaying = true;
+      this.selectedRow = 0;
+      this.selectedColumn = 0;
+      this.selectedColor = '';
+      this.win = false;
     },
     chooseCell: function (index, index2) {
       if (this.selectedRow === index) {
@@ -313,13 +333,19 @@ export default {
     background: burlywood;
   }
 
+  h2 {
+    span {
+      vertical-align: bottom;
+    }
+  }
+
   h2,
   h3 {
     color: white;
   }
 
   #score {
-    height: 40px;
+    height: 60px;
   }
 
   #home-wrapper {
