@@ -79,19 +79,19 @@
 
             <div class="marker">
               <span
+                class="pion-marker mx-1 correct"
                 v-for="(i, index3) in markersList[index].correct"
                 :key="`c-${index3}`"
-                class="pion-marker mx-1 correct"
               ></span>
               <span
+                class="pion-marker mx-1 wrong"
                 v-for="(j, index4) in markersList[index].wrong"
                 :key="`w-${index4}`"
-                class="pion-marker mx-1 wrong"
               ></span>
               <span
+                class="pion-marker mx-1 incorrect"
                 v-for="(k, index5) in markersList[index].incorrect"
                 :key="`i-${index5}`"
-                class="pion-marker mx-1 incorrect"
               ></span>
             </div>
           
@@ -138,17 +138,25 @@
             </b-button>
           </div>
         </b-card>
+
+        <b-button
+          class="d-block"
+          v-b-toggle.rules
+          variant="primary"
+        >
+          Règles du jeu
+        </b-button>
+        <b-collapse id="rules" class="mt-2">
+          <b-card no-body>
+            <p class="mb-2">Trouve la combinaison correcte.</p>
+            <div class="text-left"><span class="pion-marker mr-2 correct"></span>Un pion de couleur est bien dans la combinaison et à la bonne place</div>
+            <div class="text-left"><span class="pion-marker mr-2 wrong"></span>Un pion de couleur est bien dans la combinaison mais pas à la bonne place.</div>
+            <div class="text-left"><span class="pion-marker mr-2 incorrect"></span>Un pion de couleur n'est pas dans la combinaison.</div>
+          </b-card>
+        </b-collapse>
       </b-col>
     </b-row>
 
-    <b-modal id="modal-1" title="Règles du jeu">
-      <p class="my-4">Trouve la combinaison correcte.</p>
-      <div><span class="pion mx-1 black"></span> Un pion de couleur n'est pas dans la combinaison.</div>
-      <div><span class="pion mx-1 red"></span>Un pion de couleur est bien dans la combinaison mais pas à la bonne place.</div>
-      <div><span class="pion mx-1 green"></span>Un pion de couleur est bien dans la combinaison et à la bonne place</div>
-      <div></div>
-      <div></div>
-    </b-modal>
   </section>
 </template>
 
@@ -331,6 +339,7 @@ export default {
 #home {
   h1 {
     background: burlywood;
+    color: #2c3e50;
   }
 
   h2 {
@@ -353,6 +362,17 @@ export default {
     padding: 0;
 
     #board {
+      #rules {
+        background: #4c4f52;
+        border: 1px solid #24252e;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+
+        .card {
+          border: 0;
+        }
+      }
+      
       #soluce {
         h3 {
           color: green;
