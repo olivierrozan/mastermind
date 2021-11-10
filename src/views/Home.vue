@@ -295,19 +295,34 @@ export default {
         - La couleur n'est pas dans la liste
       */
 
-      for (var i = 0; i < 4; ++i) {
-        if (this.grille[this.selectedRow].data[i] === this.soluce[i]) {
+      let selTMP = this.grille[this.selectedRow].data.slice(0);
+      let soluceTMP = this.soluce.slice(0);
+
+      for (let i = 0; i < 4; i++) {
+        if (selTMP[i] === soluceTMP[i]) {
           this.markersList[this.selectedRow].correct++;
-        } else if (this.soluce.indexOf(this.grille[this.selectedRow].data[i]) >= 0) {
-          this.markersList[this.selectedRow].wrong++;
-        }else {
-          this.markersList[this.selectedRow].incorrect++;
+          selTMP[i] = -1;
+          soluceTMP[i] = -1;
         }
       }
 
       if (this.markersList[this.selectedRow].correct === 4) {
         this.isPlaying = false;
         this.win = true;
+      }
+
+      for (let i = 0; i < 4; i++) {
+        if (selTMP[i] === -1) {
+          continue;
+        }
+
+        const loc = soluceTMP.indexOf(selTMP[i]);
+
+        if (loc !== -1) {
+          this.markersList[this.selectedRow].wrong++;
+          selTMP[i] = -1;
+          soluceTMP[loc] = -1;
+        }
       }
     },
   },
