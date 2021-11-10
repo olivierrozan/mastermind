@@ -88,11 +88,6 @@
                 v-for="(j, index4) in markersList[index].wrong"
                 :key="`w-${index4}`"
               ></span>
-              <span
-                class="pion-marker mx-1 incorrect"
-                v-for="(k, index5) in markersList[index].incorrect"
-                :key="`i-${index5}`"
-              ></span>
             </div>
           
           </b-card>
@@ -151,7 +146,6 @@
             <p class="mb-2">Trouve la combinaison correcte.</p>
             <div class="text-left"><span class="pion-marker mr-2 correct"></span>Un pion de couleur est bien dans la combinaison et à la bonne place</div>
             <div class="text-left"><span class="pion-marker mr-2 wrong"></span>Un pion de couleur est bien dans la combinaison mais pas à la bonne place.</div>
-            <div class="text-left"><span class="pion-marker mr-2 incorrect"></span>Un pion de couleur n'est pas dans la combinaison.</div>
           </b-card>
         </b-collapse>
       </b-col>
@@ -218,8 +212,7 @@ export default {
         });
         this.markersList.push({
           correct: 0,
-          wrong: 0,
-          incorrect: 0
+          wrong: 0
         });
 
         for (let j = 0; j < 4; j++) {
@@ -295,19 +288,34 @@ export default {
         - La couleur n'est pas dans la liste
       */
 
-      for (var i = 0; i < 4; ++i) {
-        if (this.grille[this.selectedRow].data[i] === this.soluce[i]) {
+      let selTMP = this.grille[this.selectedRow].data.slice(0);
+      let soluceTMP = this.soluce.slice(0);
+
+      for (let i = 0; i < 4; i++) {
+        if (selTMP[i] === soluceTMP[i]) {
           this.markersList[this.selectedRow].correct++;
-        } else if (this.soluce.indexOf(this.grille[this.selectedRow].data[i]) >= 0) {
-          this.markersList[this.selectedRow].wrong++;
-        }else {
-          this.markersList[this.selectedRow].incorrect++;
+          selTMP[i] = -1;
+          soluceTMP[i] = -1;
         }
       }
 
       if (this.markersList[this.selectedRow].correct === 4) {
         this.isPlaying = false;
         this.win = true;
+      }
+
+      for (let i = 0; i < 4; i++) {
+        if (selTMP[i] === -1) {
+          continue;
+        }
+
+        const loc = soluceTMP.indexOf(selTMP[i]);
+
+        if (loc !== -1) {
+          this.markersList[this.selectedRow].wrong++;
+          selTMP[i] = -1;
+          soluceTMP[loc] = -1;
+        }
       }
     },
   },
@@ -359,10 +367,6 @@ export default {
 
 .wrong {
   background: grey;
-}
-
-.incorrect {
-  background: black;
 }
 
 .card {
