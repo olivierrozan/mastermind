@@ -18,10 +18,46 @@
       
     <b-row id="home-wrapper">
       <b-col id="board" class="m-auto" cols="4">
-        <div id="soluce" v-show="selectedRow === 10">
-          <h3>Soluce</h3>
+        <div
+          id="wrapper"
+          :class="`width-${nbColumns}`"
+        >
+          <div id="soluce" v-show="selectedRow === 10">
+            <h3>Soluce</h3>
+            <b-card 
+              class="one-row my-2"
+              no-body
+            >
+              <b-card 
+                class="one-column"
+                no-body
+              >
+                <div
+                  class="one-cell"
+                  v-for="(one9, index9) in soluce"
+                  :key="`soluce-${index9}`"
+                >
+                  <div
+                    class="pion"
+                    :class="{
+                              red: one9 === 0,
+                              blue: one9 === 1,
+                              green: one9 === 2,
+                              orange: one9 === 3
+                            }"
+                  ></div>
+                </div>
+
+                <div class="marker"></div>
+              
+              </b-card>
+            </b-card>
+          </div>
+          
           <b-card 
-            class="one-row my-2"
+            class="one-row"
+            v-for="(one, index) in grille"
+            :key="`r-${index}`"
             no-body
           >
             <b-card 
@@ -30,124 +66,96 @@
             >
               <div
                 class="one-cell"
-                v-for="(one9, index9) in soluce"
-                :key="`soluce-${index9}`"
+                v-for="(one2, index2) in one.data"
+                :key="`c-${index2}`"
               >
                 <div
                   class="pion"
                   :class="{
-                            red: one9 === 0,
-                            blue: one9 === 1,
-                            green: one9 === 2,
-                            orange: one9 === 3
+                            target: selectedRow === index && selectedColumn === index2,
+                            idle: selectedRow === index,
+                            red: one.data[index2] === 0,
+                            blue: one.data[index2] === 1,
+                            green: one.data[index2] === 2,
+                            orange: one.data[index2] === 3
                           }"
+                  @click="chooseCell(index, index2)"
                 ></div>
+              </div>
+
+              <div class="marker">
+                <span
+                  class="pion-marker mx-1 correct"
+                  v-for="(i, index3) in markersList[index].correct"
+                  :key="`c-${index3}`"
+                ></span>
+                <span
+                  class="pion-marker mx-1 wrong"
+                  v-for="(j, index4) in markersList[index].wrong"
+                  :key="`w-${index4}`"
+                ></span>
               </div>
             
             </b-card>
           </b-card>
-        </div>
-        
-        <b-card 
-          class="one-row"
-          v-for="(one, index) in grille"
-          :key="`r-${index}`"
-          no-body
-        >
-          <b-card 
-            class="one-column"
+
+          <b-card
+            v-show="selectedRow < 10 && !win"
+            id="pattern"
+            class="mt-5"
             no-body
           >
-            <div
-              class="one-cell"
-              v-for="(one2, index2) in one.data"
-              :key="`c-${index2}`"
-            >
+            <div class="one-cell">
               <div
-                class="pion"
-                :class="{
-                          target: selectedRow === index && selectedColumn === index2,
-                          idle: selectedRow === index,
-                          red: one.data[index2] === 0,
-                          blue: one.data[index2] === 1,
-                          green: one.data[index2] === 2,
-                          orange: one.data[index2] === 3
-                        }"
-                @click="chooseCell(index, index2)"
+                class="pion red"
+                @click="chooseColor(0)"
               ></div>
             </div>
-
-            <div class="marker">
-              <span
-                class="pion-marker mx-1 correct"
-                v-for="(i, index3) in markersList[index].correct"
-                :key="`c-${index3}`"
-              ></span>
-              <span
-                class="pion-marker mx-1 wrong"
-                v-for="(j, index4) in markersList[index].wrong"
-                :key="`w-${index4}`"
-              ></span>
+            <div class="one-cell">
+              <div
+                class="pion blue"
+                @click="chooseColor(1)"
+              ></div>
             </div>
-          
+            <div class="one-cell">
+              <div
+                class="pion green"
+                @click="chooseColor(2)"
+              ></div>
+            </div>
+            <div class="one-cell">
+              <div
+                class="pion orange"
+                @click="chooseColor(3)"
+              ></div>
+            </div>
+            <div  class="one-btn">
+              <b-button
+                class="w-100"
+                variant="primary"
+                @click="submitLine()"
+                :disabled="disableBtn()"
+              >
+                Valider
+              </b-button>
+            </div>
           </b-card>
-        </b-card>
 
-        <b-card
-          id="pattern"
-          class="mt-5"
-          no-body
-        >
-          <div class="one-cell">
-            <div
-              class="pion red"
-              @click="chooseColor(0)"
-            ></div>
-          </div>
-          <div class="one-cell">
-            <div
-              class="pion blue"
-              @click="chooseColor(1)"
-            ></div>
-          </div>
-          <div class="one-cell">
-            <div
-              class="pion green"
-              @click="chooseColor(2)"
-            ></div>
-          </div>
-          <div class="one-cell">
-            <div
-              class="pion orange"
-              @click="chooseColor(3)"
-            ></div>
-          </div>
-          <div  class="one-cell">
-            <b-button
-              class="w-100"
-              variant="primary"
-              @click="submitLine()"
-              :disabled="disableBtn()"
-            >
-              Valider
-            </b-button>
-          </div>
-        </b-card>
-
-        <b-button
-          class="d-block"
-          v-b-toggle.rules
-          variant="primary"
-        >
-          Règles du jeu
-        </b-button>
-        <b-collapse id="rules" class="mt-2">
-          <b-card no-body>
-            <p class="mb-2">Trouve la combinaison correcte.</p>
-            <div class="text-left"><span class="pion-marker mr-2 correct"></span>Un pion de couleur est bien dans la combinaison et à la bonne place</div>
-            <div class="text-left"><span class="pion-marker mr-2 wrong"></span>Un pion de couleur est bien dans la combinaison mais pas à la bonne place.</div>
-          </b-card>
-        </b-collapse>
+          <b-button
+            class="d-block mt-2"
+            v-b-toggle.rules
+            variant="primary"
+          >
+            Règles du jeu
+          </b-button>
+          <b-collapse id="rules" class="mt-2">
+            <b-card no-body>
+              <p class="mb-2">Trouve la combinaison correcte.</p>
+              <div class="text-left"><span class="pion-marker mr-2 correct"></span>Un pion de couleur est bien dans la combinaison et à la bonne place</div>
+              <div class="text-left"><span class="pion-marker mr-2 wrong"></span>Un pion de couleur est bien dans la combinaison mais pas à la bonne place.</div>
+            </b-card>
+          </b-collapse>
+        </div>
       </b-col>
     </b-row>
 
@@ -170,7 +178,9 @@ export default {
       selectedColumn: 0,
       selectedColor: '',
       win: false,
-      markersList: []
+      markersList: [],
+      nbColumns: 4,
+      allCellsSelected: false
     };
   },
   created: function () {
@@ -182,13 +192,11 @@ export default {
     disableBtn: function () {
       // Désactive le bouton "valider"
       if (this.selectedRow < 10) {
-        return (
-          this.grille[this.selectedRow].data[0] === -1
-          || this.grille[this.selectedRow].data[1] === -1
-          || this.grille[this.selectedRow].data[2] === -1
-          || this.grille[this.selectedRow].data[3] === -1
-        )
-          || !this.isPlaying;
+        this.allCellsSelected = this.grille[this.selectedRow].data.some(function (cell) {
+          return cell === -1;
+        });
+        
+        return this.allCellsSelected|| !this.isPlaying;
       } else {
         return !this.isPlaying;
       }
@@ -215,7 +223,7 @@ export default {
           wrong: 0
         });
 
-        for (let j = 0; j < 4; j++) {
+        for (let j = 0; j < this.nbColumns; j++) {
           this.grille[i].data.push(-1);
         }
       }
@@ -232,7 +240,7 @@ export default {
       const min = Math.ceil(0);
       const max = Math.floor(3);
 
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < this.nbColumns; i++) {
         const nb = Math.floor(Math.random() * (max - min + 1)) + min;
         this.soluce.push(nb);
       }
@@ -248,7 +256,7 @@ export default {
       // Affecte la couleur sélectionné
       this.selectedColor = color;
 
-      if (this.selectedColumn < 4) {
+      if (this.selectedColumn < this.nbColumns) {
         this.grille[this.selectedRow].data[this.selectedColumn] = this.selectedColor;
         this.selectedColumn++;
 
@@ -256,15 +264,22 @@ export default {
           this.selectedColumn = -1;
         }
 
-        if (this.grille[this.selectedRow].data[0] === -1) {
-          this.selectedColumn = 0;
-        } else if (this.grille[this.selectedRow].data[1] === -1) {
-          this.selectedColumn = 1;
-        } else if (this.grille[this.selectedRow].data[2] === -1) {
-          this.selectedColumn = 2;
-        } else if (this.grille[this.selectedRow].data[3] === -1) {
-          this.selectedColumn = 3;
+        for (let i = 0; i < this.nbColumns; i++) {
+          if (this.grille[this.selectedRow].data[i] === -1) {
+            this.selectedColumn = i;
+            break;
+          }
         }
+        
+        // if (this.grille[this.selectedRow].data[0] === -1) {
+        //   this.selectedColumn = 0;
+        // } else if (this.grille[this.selectedRow].data[1] === -1) {
+        //   this.selectedColumn = 1;
+        // } else if (this.grille[this.selectedRow].data[2] === -1) {
+        //   this.selectedColumn = 2;
+        // } else if (this.grille[this.selectedRow].data[3] === -1) {
+        //   this.selectedColumn = 3;
+        // }
       }
     },
     submitLine: function () {
@@ -291,7 +306,7 @@ export default {
       let selTMP = this.grille[this.selectedRow].data.slice(0);
       let soluceTMP = this.soluce.slice(0);
 
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < this.nbColumns; i++) {
         if (selTMP[i] === soluceTMP[i]) {
           this.markersList[this.selectedRow].correct++;
           selTMP[i] = -1;
@@ -299,12 +314,12 @@ export default {
         }
       }
 
-      if (this.markersList[this.selectedRow].correct === 4) {
+      if (this.markersList[this.selectedRow].correct === this.nbColumns) {
         this.isPlaying = false;
         this.win = true;
       }
 
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < this.nbColumns; i++) {
         if (selTMP[i] === -1) {
           continue;
         }
@@ -403,6 +418,20 @@ export default {
     padding: 0;
 
     #board {
+      #wrapper {
+        margin: auto;
+
+        &.width-4 {
+          width: 350px;
+        }
+        &.width-6 {
+          width: 450px;
+        }
+        &.width-8 {
+          width: 550px;
+        }
+      }
+
       #rules {
         background: #4c4f52;
         border: 1px solid #24252e;
@@ -433,12 +462,16 @@ export default {
 
           .one-cell,
           .marker {
-            width: 20%;
             height: 30px;
             margin: 5px 0;
           }
 
+          .one-cell {
+            width: 50px;
+          }
+
           .marker {
+            width: 150px;
             border-left: 1px solid white;
           }
         }
@@ -449,9 +482,14 @@ export default {
         width: 100%;
         border-bottom: 0;
 
-        .one-cell {
+        .one-cell,
+        .one-btn {
           margin-top: 10px;
-          width: 20%;
+          align-self: end;
+        }
+
+        .one-cell {
+          width: 50px;
         }
       }
 
