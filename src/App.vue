@@ -12,7 +12,7 @@
   text-align: center;
   color: white;
   background: #3F4050;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 #nav {

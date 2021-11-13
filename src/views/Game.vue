@@ -1,10 +1,9 @@
 <template>
   <b-col id="board" class="m-auto" cols="4">
-    <code>{{ settings }}</code>
     <span id="score" class="d-inline-block">
       <h2>
         <span v-show="win">GAGNE</span>
-        <span v-show="selectedRow === 10">PERDU</span>
+        <span v-show="selectedRow === settings.attempts">PERDU</span>
         <b-button
           v-if="!isPlaying"
           class="mt-2 ml-2 d-inline-block"
@@ -20,7 +19,7 @@
       id="wrapper"
       :class="`width-${settings.codeWidth}`"
     >
-      <div id="soluce" v-show="selectedRow === 10">
+      <div id="soluce" v-show="selectedRow === settings.attempts">
         <h3>Soluce</h3>
         <b-card 
           class="one-row my-2"
@@ -98,7 +97,7 @@
       </b-card>
 
       <b-card
-        v-show="selectedRow < 10 && !win"
+        v-show="selectedRow < settings.attempts && !win"
         id="pattern"
         class="mt-5"
         no-body
@@ -146,20 +145,22 @@
       >
         Abandonner la partie
       </b-button>
-      <b-button
-        class="d-block mt-2"
-        v-b-toggle.rules
-        variant="primary"
-      >
-        Règles du jeu
-      </b-button>
-      <b-collapse id="rules" class="mt-2">
-        <b-card no-body>
-          <p class="mb-2">Trouve la combinaison correcte.</p>
-          <div class="text-left"><span class="pion-marker mr-2 correct"></span>Un pion de couleur est bien dans la combinaison et à la bonne place</div>
-          <div class="text-left"><span class="pion-marker mr-2 wrong"></span>Un pion de couleur est bien dans la combinaison mais pas à la bonne place.</div>
-        </b-card>
-      </b-collapse>
+      <div class="mt-2 mb-5">
+        <b-button
+          class="d-block"
+          v-b-toggle.rules
+          variant="primary"
+        >
+          Règles du jeu
+        </b-button>
+        <b-collapse id="rules" class="mt-2">
+          <b-card no-body>
+            <p class="mb-2">Trouve la combinaison correcte.</p>
+            <div class="text-left"><span class="pion-marker mr-2 correct"></span>Un pion de couleur est bien dans la combinaison et à la bonne place</div>
+            <div class="text-left"><span class="pion-marker mr-2 wrong"></span>Un pion de couleur est bien dans la combinaison mais pas à la bonne place.</div>
+          </b-card>
+        </b-collapse>
+      </div>
     </div>
   </b-col>
 </template>
@@ -198,7 +199,7 @@ export default {
     },
     disableBtn: function () {
       // Désactive le bouton "valider"
-      if (this.selectedRow < 10) {
+      if (this.selectedRow < this.settings.attempts) {
         this.allCellsSelected = this.grille[this.selectedRow].data.some(function (cell) {
           return cell === -1;
         });
@@ -222,7 +223,7 @@ export default {
      this.markersList = [];
      console.log(this.settings);
 
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < this.settings.attempts; i++) {
         this.grille.push({
           data: []
         });
@@ -289,7 +290,7 @@ export default {
         this.selectedColumn = 0;
       }
 
-      if (this.selectedRow > 9) {
+      if (this.selectedRow > (this.settings.attempts - 1)) {
         this.isPlaying = false;
       }
     },
