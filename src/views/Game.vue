@@ -204,7 +204,7 @@ export default {
           return cell === -1;
         });
         
-        return this.allCellsSelected|| !this.isPlaying;
+        return this.allCellsSelected || !this.isPlaying;
       } else {
         return !this.isPlaying;
       }
@@ -221,7 +221,6 @@ export default {
      this.grille = [];
      this.soluce = [];
      this.markersList = [];
-     console.log(this.settings);
 
       for (let i = 0; i < this.settings.attempts; i++) {
         this.grille.push({
@@ -246,19 +245,28 @@ export default {
     },
     initSoluce: function () {
       // Génère le code à trouver
-      const min = Math.ceil(0);
-      const max = Math.floor(3);
-
-      for (let i = 0; i < this.settings.codeWidth; i++) {
-        const nb = Math.floor(Math.random() * (max - min + 1)) + min;
-        this.soluce.push(nb);
+      if (this.settings.duplicates) {
+        const min = Math.ceil(0);
+        const max = Math.floor(this.colorsList.length - 1);
+  
+        for (let i = 0; i < this.settings.codeWidth; i++) {
+          const nb = Math.floor(Math.random() * (max - min + 1)) + min;
+          this.soluce.push(nb);
+        }
+      } else {
+        const tmp = [];
+        for (let i = 0; i < this.settings.codeWidth; i++) {
+          tmp.push(i);
+        }
+        this.soluce = tmp.sort(function () {
+          return Math.random() - 0.5;
+        });
       }
     },
     chooseCell: function (index, index2) {
       // Affecte la cellule sélectionnée
       if (this.selectedRow === index) {
         this.selectedColumn = index2;
-        // this.grille[this.selectedRow].data[this.selectedColumn] = -1;
       }
     },
     chooseColor: function (color) {
