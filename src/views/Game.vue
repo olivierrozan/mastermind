@@ -36,12 +36,7 @@
             >
               <div
                 class="pion"
-                :class="{
-                          red: one9 === 0,
-                          blue: one9 === 1,
-                          green: one9 === 2,
-                          orange: one9 === 3
-                        }"
+                :class="colorsList[one9]"
               ></div>
             </div>
 
@@ -71,10 +66,7 @@
               :class="{
                         target: selectedRow === index && selectedColumn === index2,
                         idle: selectedRow === index,
-                        red: one.data[index2] === 0,
-                        blue: one.data[index2] === 1,
-                        green: one.data[index2] === 2,
-                        orange: one.data[index2] === 3
+                        [colorsList[one2]]: true
                       }"
               @click="chooseCell(index, index2)"
             ></div>
@@ -102,28 +94,15 @@
         class="mt-5"
         no-body
       >
-        <div class="one-cell">
+        <div
+          class="one-cell"
+          v-for="(item, index) in colorsList"
+          :key="index"
+        >
           <div
-            class="pion red"
-            @click="chooseColor(0)"
-          ></div>
-        </div>
-        <div class="one-cell">
-          <div
-            class="pion blue"
-            @click="chooseColor(1)"
-          ></div>
-        </div>
-        <div class="one-cell">
-          <div
-            class="pion green"
-            @click="chooseColor(2)"
-          ></div>
-        </div>
-        <div class="one-cell">
-          <div
-            class="pion orange"
-            @click="chooseColor(3)"
+            class="pion"
+            :class="item"
+            @click="chooseColor(index)"
           ></div>
         </div>
         <div  class="one-btn">
@@ -174,7 +153,8 @@ export default {
   components: {},
   data: function () {
     return {
-      colorsList: ["red", "blue", "green", "orange"],
+      colorsList: [],
+      totalColorsList: ["red", "blue", "yellow", "green", "orange", "purple", "marroon", "pink"],
       grille: [],
       isPlaying: true,
       soluce: [],
@@ -214,13 +194,18 @@ export default {
         Initialise la partie
         rouge: 0
         bleu: 1
-        vert: 2
-        orange: 3
+        jaune: 2
+        vert: 3
+        orange: 4
+        violet: 5
+        marron: 6
+        rose: 7
       */
 
      this.grille = [];
      this.soluce = [];
      this.markersList = [];
+     this.colorsList = [];
 
       for (let i = 0; i < this.settings.attempts; i++) {
         this.grille.push({
@@ -236,6 +221,10 @@ export default {
         }
       }
 
+      for (let j = 0; j < this.settings.codeWidth; j++) {
+        this.colorsList.push(this.totalColorsList[j]);
+      }
+
       this.initSoluce();
       this.isPlaying = true;
       this.selectedRow = 0;
@@ -245,22 +234,17 @@ export default {
     },
     initSoluce: function () {
       // Génère le code à trouver
-      if (this.settings.duplicates) {
-        const min = Math.ceil(0);
-        const max = Math.floor(this.colorsList.length - 1);
-  
-        for (let i = 0; i < this.settings.codeWidth; i++) {
-          const nb = Math.floor(Math.random() * (max - min + 1)) + min;
-          this.soluce.push(nb);
-        }
+      if (this.settings.useColorsOnce) {
+        // Pas de duplication: shuffle
+        this.soluce = this.colorsList
+        .map((_value, index) => ({ index, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .map(({ index }) => index);
       } else {
-        const tmp = [];
+        // TODO duplication: Possibilité d'utiliser une couleur plusieurs fois
         for (let i = 0; i < this.settings.codeWidth; i++) {
-          tmp.push(i);
+          this.soluce[i] = Math.floor(Math.random() * this.settings.codeWidth);
         }
-        this.soluce = tmp.sort(function () {
-          return Math.random() - 0.5;
-        });
       }
     },
     chooseCell: function (index, index2) {
@@ -270,7 +254,7 @@ export default {
       }
     },
     chooseColor: function (color) {
-      // Affecte la couleur sélectionné
+      // Affecte la couleur sélectionnée
       this.selectedColor = color;
 
       if (this.selectedColumn < this.settings.codeWidth) {
@@ -380,7 +364,19 @@ export default {
 }
 
 .orange {
-  background: #ffc107;
+  background: #fd7e14;
+}
+.yellow {
+  background: #ffe607;
+}
+.purple {
+  background: #cd07ff;
+}
+.marroon {
+  background: #814f04;
+}
+.pink {
+  background: #ff07c1;
 }
 
 .correct {

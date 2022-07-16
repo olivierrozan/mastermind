@@ -23,7 +23,7 @@
         id="checkbox-1"
         class="my-2"
         name="checkbox-1"
-        v-model="settings.duplicates"
+        v-model="settings.useColorsOnce"
         switch
       >
         Utilise les couleurs une seule fois
@@ -76,7 +76,7 @@ export default {
       colorsList: ['red', 'blue', 'green', 'orange'],
       mode_: 0,
       settings: {
-        duplicates: false,
+        useColorsOnce: false,
         attempts: 10,
         codeWidth: 4
       },

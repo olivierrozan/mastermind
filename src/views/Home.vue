@@ -33,7 +33,7 @@ export default {
     return {
       mode: 0,
       settings: {
-        duplicates: false,
+        useColorsOnce: false,
         attempts: 0,
         codeWidth: 0
       },
