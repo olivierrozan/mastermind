@@ -1,5 +1,12 @@
 <template>
   <b-col id="board" class="m-auto" cols="4">
+    <b-card class="p-2" no-body>
+      <div v-if="settings.useColorsOnce">Utilise les couleurs une seule fois</div>
+      <div v-else>Utilise les couleurs plusieurs fois</div>
+      <div>Nombre d'essais: {{ settings.attempts }}</div>
+      <div>Longueur de code: {{ settings.codeWidth }}</div>
+    </b-card>
+    
     <span id="score" class="d-inline-block">
       <h2>
         <span v-show="win">GAGNE</span>
@@ -124,6 +131,7 @@
       >
         Abandonner la partie
       </b-button>
+
       <div class="mt-2 mb-5">
         <b-button
           class="d-block"
@@ -174,8 +182,26 @@ export default {
   },
   methods: {
     giveUp: function () {
-      this.mode_ = 0;
-      this.$emit('selectedMode', this.mode_);
+      this.$bvModal.msgBoxConfirm('Etes-vous sûr de vouloir abandonner la partie en cours ?', {
+          title: 'Abandon',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'success',
+          okTitle: 'Oui',
+          cancelTitle: 'Non',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+          .then((value) => {
+            if (value) {
+              this.mode_ = 0;
+              this.$emit('selectedMode', this.mode_);
+            }
+          })
+          .catch(err => {
+            console.error(err.message);
+          })
     },
     disableBtn: function () {
       // Désactive le bouton "valider"
