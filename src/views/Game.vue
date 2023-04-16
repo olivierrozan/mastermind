@@ -19,7 +19,7 @@
           v-if="!isPlaying"
           class="mt-2 ml-2 d-inline-block"
           variant="primary"
-          @click="init()"
+          @click="replay()"
         >
           Rejouer
         </b-button>
@@ -182,6 +182,9 @@ export default {
   computed: {
   },
   methods: {
+    replay: function () {
+      this.$router.go();
+    },
     giveUp: function () {
       const that = this;
 
@@ -198,8 +201,7 @@ export default {
         })
           .then(value => {
             if (value) {
-              // TODO Recharger la page ?
-              that.$emit('selectedMode', 0);
+              that.$router.go();
             }
           })
           .catch(err => {
