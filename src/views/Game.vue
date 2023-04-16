@@ -1,13 +1,17 @@
 <template>
   <b-col id="board" class="m-auto" cols="4">
     <b-card class="p-2" no-body>
+      <h2>{{ settings.title }}</h2>
       <div v-if="settings.useColorsOnce">Utilise les couleurs une seule fois</div>
       <div v-else>Utilise les couleurs plusieurs fois</div>
       <div>Nombre d'essais: {{ settings.attempts }}</div>
       <div>Longueur de code: {{ settings.codeWidth }}</div>
     </b-card>
     
-    <span id="score" class="d-inline-block">
+    <span
+      id="score"
+      class="d-inline-block"
+    >
       <h2>
         <span v-show="win">GAGNE</span>
         <span v-show="selectedRow === settings.attempts">PERDU</span>
@@ -38,7 +42,7 @@
           >
             <div
               class="one-cell"
-              v-for="(one9, index9) in soluce"
+              v-for="(one9, index9) in solucePlayer"
               :key="`soluce-${index9}`"
             >
               <div
@@ -157,22 +161,19 @@
 
 export default {
   name: "Game",
-  props: ['mode', 'settings'],
+  props: ['settings', 'solucePlayer', 'colorsList'],
   components: {},
   data: function () {
     return {
-      colorsList: [],
       totalColorsList: ["red", "blue", "yellow", "green", "orange", "purple", "marroon", "pink"],
       grille: [],
       isPlaying: true,
-      soluce: [],
       selectedRow: 0,
       selectedColumn: 0,
       selectedColor: '',
       win: false,
       markersList: [],
-      allCellsSelected: false,
-      mode_: 0
+      allCellsSelected: false
     };
   },
   created: function () {
@@ -182,21 +183,23 @@ export default {
   },
   methods: {
     giveUp: function () {
-      this.$bvModal.msgBoxConfirm('Etes-vous sûr de vouloir abandonner la partie en cours ?', {
+      const that = this;
+
+      that.$bvModal.msgBoxConfirm('Etes-vous sûr de vouloir abandonner la partie en cours ?', {
           title: 'Abandon',
           size: 'sm',
           buttonSize: 'sm',
-          okVariant: 'success',
+          okVariant: 'primary',
           okTitle: 'Oui',
           cancelTitle: 'Non',
           footerClass: 'p-2',
           hideHeaderClose: false,
           centered: true
         })
-          .then((value) => {
+          .then(value => {
             if (value) {
-              this.mode_ = 0;
-              this.$emit('selectedMode', this.mode_);
+              // TODO Recharger la page ?
+              that.$emit('selectedMode', 0);
             }
           })
           .catch(err => {
@@ -229,9 +232,7 @@ export default {
       */
 
      this.grille = [];
-     this.soluce = [];
      this.markersList = [];
-     this.colorsList = [];
 
       for (let i = 0; i < this.settings.attempts; i++) {
         this.grille.push({
@@ -242,36 +243,14 @@ export default {
           wrong: 0
         });
 
-        for (let j = 0; j < this.settings.codeWidth; j++) {
-          this.grille[i].data.push(-1);
-        }
+        this.grille[i].data = new Array(this.settings.codeWidth).fill(-1);
       }
 
-      for (let j = 0; j < this.settings.codeWidth; j++) {
-        this.colorsList.push(this.totalColorsList[j]);
-      }
-
-      this.initSoluce();
       this.isPlaying = true;
       this.selectedRow = 0;
       this.selectedColumn = 0;
       this.selectedColor = '';
       this.win = false;
-    },
-    initSoluce: function () {
-      // Génère le code à trouver
-      if (this.settings.useColorsOnce) {
-        // Pas de duplication: shuffle
-        this.soluce = this.colorsList
-        .map((_value, index) => ({ index, sort: Math.random() }))
-        .sort((a, b) => a.sort - b.sort)
-        .map(({ index }) => index);
-      } else {
-        // TODO duplication: Possibilité d'utiliser une couleur plusieurs fois
-        for (let i = 0; i < this.settings.codeWidth; i++) {
-          this.soluce[i] = Math.floor(Math.random() * this.settings.codeWidth);
-        }
-      }
     },
     chooseCell: function (index, index2) {
       // Affecte la cellule sélectionnée
@@ -321,7 +300,7 @@ export default {
       */
 
       let selTMP = this.grille[this.selectedRow].data.slice(0);
-      let soluceTMP = this.soluce.slice(0);
+      let soluceTMP = this.solucePlayer.slice(0);
 
       for (let i = 0; i < this.settings.codeWidth; i++) {
         if (selTMP[i] === soluceTMP[i]) {
@@ -484,6 +463,8 @@ export default {
       }
       
       .one-row {
+        height: 42px;
+        
         .one-column {
           flex-direction: row !important;
           border: 0;
@@ -510,6 +491,7 @@ export default {
         flex-direction: row !important;
         width: 100%;
         border-bottom: 0;
+        border: 0;
 
         .one-cell,
         .one-btn {
