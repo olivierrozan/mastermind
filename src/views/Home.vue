@@ -1,8 +1,10 @@
 <template>
   <section id="home">
-    <h1 class="py-2">Mastermind</h1>
+    <h1 class="py-2">
+      Mastermind
+    </h1>
     <b-row id="home-wrapper">
-      <Menu
+      <Settings
         v-if="mode < 3"
         :mode="mode"
         @selectedMode="setMode"
@@ -10,45 +12,50 @@
       />
       <Game
         v-if="mode === 3"
-        :mode="mode"
         :settings="settings"
+        :soluce-player="soluce"
+        :colors-list="colorsList"
         @selectedMode="setMode"
       />
     </b-row>
-
   </section>
 </template>
 
 <script>
 // @ is an alias to /src
-import Menu from './Menu';
+import Settings from './Settings';
 import Game from './Game';
 export default {
   name: "Home",
   components: {
-    Menu,
+    Settings,
     Game
   },
   data: function () {
     return {
       mode: 0,
       settings: {
+        title: '',
         useColorsOnce: false,
         attempts: 0,
         codeWidth: 0
       },
+      soluce: [],
+      colorsList: []
     };
   },
-  created: function () {
-  },
   computed: {
+  },
+  created: function () {
   },
   methods: {
     setMode: function (val) {
       this.mode = val;
     },
     setPlay: function (val) {
-      this.settings = val;
+      this.settings = val[0];
+      this.soluce = val[1];
+      this.colorsList = val[2];
     }
   }
 };
