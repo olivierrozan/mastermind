@@ -1,9 +1,5 @@
 <template>
-  <b-col
-    id="board"
-    class="m-auto"
-    cols="4"
-  >
+  <b-col id="board" class="m-auto" cols="4">
     <div v-show="mode === 0">
       <b-button
         class="my-2 w-100"
@@ -30,9 +26,9 @@
       <b-form-checkbox
         v-show="mode === 1"
         id="checkbox-1"
-        v-model="settings.useColorsOnce"
         class="my-2"
         name="checkbox-1"
+        v-model="settings.useColorsOnce"
         switch
       >
         Utilise les couleurs une seule fois
@@ -63,10 +59,7 @@
         @change="changeSoluce"
       />
 
-      <div
-        v-show="mode === 2"
-        class="mt-3"
-      >
+      <div v-show="mode === 2" class="mt-3">
         <h3>Choisis une combinaison</h3>
 
         <b-card 
@@ -85,7 +78,7 @@
               <div
                 class="pion"
                 :class="soluce[index2]"
-              />
+              ></div>
             </div>
           </b-card>
         </b-card>
@@ -104,7 +97,7 @@
               class="pion"
               :class="item"
               @click="chooseColor(index)"
-            />
+            ></div>
           </div>
 
           <b-button
@@ -130,8 +123,8 @@
         <b-button
           class="ml-2 w-50"
           variant="primary"
-          :disabled="mode === 2 && soluce.length < 4"
           @click="play()"
+          :disabled="mode === 2 && soluce.length < 4"
         >
           Valider
         </b-button>
@@ -145,8 +138,8 @@
 
 export default {
   name: 'Settings',
-  components: {},
   props: ['mode'],
+  components: {},
   data: function () {
     return {
       colorsList: ["red", "blue", "yellow", "green"],
@@ -170,9 +163,9 @@ export default {
       ]
     };
   },
-  computed: {
-  },
   created: function () {
+  },
+  computed: {
   },
   methods: {
     chooseColor: function (color) {

@@ -13,8 +13,8 @@
       <Game
         v-if="mode === 3"
         :settings="settings"
-        :soluce-player="soluce"
-        :colors-list="colorsList"
+        :solucePlayer="soluce"
+        :colorsList="colorsList"
         @selectedMode="setMode"
       />
     </b-row>

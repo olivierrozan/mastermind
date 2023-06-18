@@ -1,20 +1,9 @@
 <template>
-  <b-col
-    id="board"
-    class="m-auto"
-    cols="4"
-  >
-    <b-card
-      class="p-2"
-      no-body
-    >
+  <b-col id="board" class="m-auto" cols="4">
+    <b-card class="p-2" no-body>
       <h2>{{ settings.title }}</h2>
-      <div v-if="settings.useColorsOnce">
-        Utilise les couleurs une seule fois
-      </div>
-      <div v-else>
-        Utilise les couleurs plusieurs fois
-      </div>
+      <div v-if="settings.useColorsOnce">Utilise les couleurs une seule fois</div>
+      <div v-else>Utilise les couleurs plusieurs fois</div>
       <div>Nombre d'essais: {{ settings.attempts }}</div>
       <div>Longueur de code: {{ settings.codeWidth }}</div>
     </b-card>
