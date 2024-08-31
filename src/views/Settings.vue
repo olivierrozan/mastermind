@@ -1,20 +1,18 @@
 <template>
-  <b-col id="board" class="m-auto" cols="4">
+  <div id="board" class="m-auto col-4">
     <div v-show="mode === 0">
-      <b-button
-        class="my-2 w-100"
-        variant="primary"
+      <button
+        class="my-2 w-100 btn btn-primary"
         @click="choosePVCPU()"
       >
         Player vs CPU
-      </b-button>
-      <b-button
-        class="my-2 w-100"
-        variant="primary"
+      </button>
+      <button
+        class="my-2 w-100 btn btn-primary"
         @click="choosePVP()"
       >
         Player vs Player
-      </b-button>
+      </button>
     </div>
 
     <div v-show="mode === 1 || mode === 2">
@@ -23,16 +21,23 @@
         <span v-show="mode === 2">Player vs Player</span>
       </h2>
 
-      <b-form-checkbox
+      <div
         v-show="mode === 1"
         id="checkbox-1"
-        class="my-2"
+        class="form-check form-switch my-2"
         name="checkbox-1"
-        v-model="settings.useColorsOnce"
-        switch
       >
-        Utilise les couleurs une seule fois
-      </b-form-checkbox>
+        <input
+          id="flexCheckDefault"
+          class="form-check-input"
+          type="checkbox"
+          v-model="settings.useColorsOnce"
+          value="1"
+        >
+        <label class="form-check-label" for="flexCheckDefault">
+          Utilise les couleurs une seule fois
+        </label>
+      </div>
 
       <label
         for="attempt"
@@ -40,11 +45,23 @@
       >
         Nombre d'essais
       </label>
-      <b-form-select
+
+      <select
         id="attempt"
+        class="form-select"
         v-model="settings.attempts"
-        :options="AttemptsList"
-      />
+        aria-label="attempts"
+      >
+        <option selected :value="null" disabled>Open this select menu</option>
+
+        <option
+          v-for="(attempt, index) in AttemptsList"
+          :key="index"
+          :value="attempt.id"
+        >
+          {{ attempt.label }}
+        </option>
+      </select>
 
       <label
         for="code-Width"
@@ -52,24 +69,30 @@
       >
         Longueur de code
       </label>
-      <b-form-select
+
+      <select
         id="code-Width"
+        class="form-select"
         v-model="settings.codeWidth"
-        :options="codeWidthsList"
+        aria-label="code width"
         @change="changeSoluce"
-      />
+      >
+        <option selected :value="null" disabled>Open this select menu</option>
+
+        <option
+          v-for="(codeWidth, index) in codeWidthsList"
+          :key="index"
+          :value="codeWidth.id"
+        >
+          {{ codeWidth.label }}
+        </option>
+      </select>
 
       <div v-show="mode === 2" class="mt-3">
         <h3>Choisis une combinaison</h3>
 
-        <b-card 
-          class="one-row"
-          no-body
-        >
-          <b-card 
-            class="one-column"
-            no-body
-          >
+        <div class="card one-row">
+          <div class="card one-column">
             <div
               v-for="(one2, index2) in soluce"
               :key="`c-${index2}`"
@@ -80,13 +103,12 @@
                 :class="soluce[index2]"
               ></div>
             </div>
-          </b-card>
-        </b-card>
+          </div>
+        </div>
 
-        <b-card
+        <div
           id="pattern"
-          class="mt-2"
-          no-body
+          class="card mt-2"
         >
           <div
             v-for="(item, index) in colorsList"
@@ -100,37 +122,32 @@
             ></div>
           </div>
 
-          <b-button
-            class="ml-2"
-            variant="secondary"
-            size="sm"
+          <button
+            class="ms-2 btn btn-secondary btn-sm"
             @click="resetSoluce()"
           >
             Reset
-          </b-button>
-        </b-card>
+          </button>
+        </div>
       </div>
 
-
       <div class="d-inline-flex mt-4 w-100">
-        <b-button
-          class="mr-2 w-50"
-          variant="secondary"
+        <button
+          class="me-2 w-50 btn btn-secondary"
           @click="backToMenu()"
         >
           Retour
-        </b-button>
-        <b-button
-          class="ml-2 w-50"
-          variant="primary"
+        </button>
+        <button
+          class="ms-2 w-50 btn btn-primary"
           @click="play()"
           :disabled="mode === 2 && soluce.length < 4"
         >
           Valider
-        </b-button>
+        </button>
       </div>
     </div>
-  </b-col>
+  </div>
 </template>
 
 <script>
@@ -151,15 +168,15 @@ export default {
         codeWidth: 4
       },
       AttemptsList: [
-        { value: 5, text: '5' },
-        { value: 10, text: '10' },
-        { value: 15, text: '15' },
-        { value: 20, text: '20' }
+        { id: 5, label: '5' },
+        { id: 10, label: '10' },
+        { id: 15, label: '15' },
+        { id: 20, label: '20' }
       ],
       codeWidthsList: [
-        { value: 4, text: '4' },
-        { value: 6, text: '6' },
-        { value: 8, text: '8' }
+        { id: 4, label: '4' },
+        { id: 6, label: '6' },
+        { id: 8, label: '8' }
       ]
     };
   },

@@ -1,12 +1,76 @@
 <template>
-  <b-col id="board" class="m-auto" cols="4">
-    <b-card class="p-2" no-body>
+  <div id="board" class="m-auto col-4">
+    <div class="card p-2 text-white">
       <h2>{{ settings.title }}</h2>
       <div v-if="settings.useColorsOnce">Utilise les couleurs une seule fois</div>
       <div v-else>Utilise les couleurs plusieurs fois</div>
       <div>Nombre d'essais: {{ settings.attempts }}</div>
       <div>Longueur de code: {{ settings.codeWidth }}</div>
-    </b-card>
+
+      <div class="mt-2 d-flex justify-content-around">
+        <button
+          class="d-block btn btn-sm btn-info me-1"
+          @click="$bootstrap.Modal.getOrCreateInstance('#rules-modal').show()"
+        >
+          Règles du jeu
+        </button>
+
+        <button
+          class="d-block btn btn-sm btn-danger ms-1"
+          @click="$bootstrap.Modal.getOrCreateInstance('#give-up-modal').show()"
+        >
+          Abandonner la partie
+        </button>
+
+        <div id="rules-modal" class="modal fade mt-2" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title text-black">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+
+              <div class="modal-body">
+                <div class="card">
+                  <p class="mb-2">
+                    Trouve la combinaison correcte.
+                  </p>
+                  <div class="text-start">
+                    <span class="pion-marker me-2 correct" />Un pion de couleur est bien dans la combinaison et à la bonne place
+                  </div>
+                  <div class="text-start">
+                    <span class="pion-marker me-2 wrong" />Un pion de couleur est bien dans la combinaison mais pas à la bonne place.
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="give-up-modal" class="modal fade mt-2" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header text-black">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+
+              <div class="modal-body text-black">
+                  Etes-vous sûr de vouloir abandonner la partie en cours ?
+              </div>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+                <button type="button" class="btn btn-primary" @click="$router.go()">Oui</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <span
       id="score"
@@ -15,14 +79,13 @@
       <h2>
         <span v-show="win">GAGNE</span>
         <span v-show="selectedRow === settings.attempts">PERDU</span>
-        <b-button
+        <button
           v-if="!isPlaying"
-          class="mt-2 ml-2 d-inline-block"
-          variant="primary"
+          class="mt-2 ms-2 d-inline-block btn btn-primary"
           @click="replay()"
         >
           Rejouer
-        </b-button>
+        </button>
       </h2>
     </span>
     
@@ -35,14 +98,8 @@
         id="soluce"
       >
         <h3>Soluce</h3>
-        <b-card 
-          class="one-row my-2"
-          no-body
-        >
-          <b-card 
-            class="one-column"
-            no-body
-          >
+        <div class="card one-row my-2">
+          <div class="card one-column">
             <div
               v-for="(one9, index9) in solucePlayer"
               :key="`soluce-${index9}`"
@@ -55,20 +112,16 @@
             </div>
 
             <div class="marker" />
-          </b-card>
-        </b-card>
+          </div>
+        </div>
       </div>
       
-      <b-card 
+      <div 
         v-for="(one, index) in grille"
         :key="`r-${index}`"
-        class="one-row"
-        no-body
+        class="card one-row"
       >
-        <b-card 
-          class="one-column"
-          no-body
-        >
+        <div class="card one-column">
           <div
             v-for="(one2, index2) in one.data"
             :key="`c-${index2}`"
@@ -97,14 +150,13 @@
               class="pion-marker mx-1 wrong"
             />
           </div>
-        </b-card>
-      </b-card>
+        </div>
+      </div>
 
-      <b-card
+      <div
         v-show="selectedRow < settings.attempts && !win"
         id="pattern"
-        class="mt-5"
-        no-body
+        class="card mt-5"
       >
         <div
           v-for="(item, index) in colorsList"
@@ -118,52 +170,18 @@
           />
         </div>
         <div class="one-btn">
-          <b-button
-            class="w-100"
-            variant="primary"
+          <button
+            class="w-100 btn btn-primary"
             :disabled="disableBtn()"
             @click="submitLine()"
           >
             Valider
-          </b-button>
+          </button>
         </div>
-      </b-card>
-
-      <b-button
-        class="d-block mt-2"
-        variant="primary"
-        @click="giveUp()"
-      >
-        Abandonner la partie
-      </b-button>
-
-      <div class="mt-2 mb-5">
-        <b-button
-          v-b-toggle.rules
-          class="d-block"
-          variant="primary"
-        >
-          Règles du jeu
-        </b-button>
-        <b-collapse
-          id="rules"
-          class="mt-2"
-        >
-          <b-card no-body>
-            <p class="mb-2">
-              Trouve la combinaison correcte.
-            </p>
-            <div class="text-left">
-              <span class="pion-marker mr-2 correct" />Un pion de couleur est bien dans la combinaison et à la bonne place
-            </div>
-            <div class="text-left">
-              <span class="pion-marker mr-2 wrong" />Un pion de couleur est bien dans la combinaison mais pas à la bonne place.
-            </div>
-          </b-card>
-        </b-collapse>
       </div>
+
     </div>
-  </b-col>
+  </div>
 </template>
 
 <script>
@@ -194,29 +212,6 @@ export default {
   methods: {
     replay: function () {
       this.$router.go();
-    },
-    giveUp: function () {
-      const that = this;
-
-      that.$bvModal.msgBoxConfirm('Etes-vous sûr de vouloir abandonner la partie en cours ?', {
-        title: 'Abandon',
-        size: 'sm',
-        buttonSize: 'sm',
-        okVariant: 'primary',
-        okTitle: 'Oui',
-        cancelTitle: 'Non',
-        footerClass: 'p-2',
-        hideHeaderClose: false,
-        centered: true
-      })
-        .then(value => {
-          if (value) {
-            that.$router.go();
-          }
-        })
-        .catch(err => {
-          console.error(err.message);
-        });
     },
     disableBtn: function () {
       // Désactive le bouton "valider"
@@ -347,8 +342,8 @@ export default {
 
 <style lang="scss">
 .pion {
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 30px;
   display: inline-block;
   border-radius: 100%;
 }

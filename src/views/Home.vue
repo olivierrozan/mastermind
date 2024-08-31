@@ -3,7 +3,7 @@
     <h1 class="py-2">
       Mastermind
     </h1>
-    <b-row id="home-wrapper">
+    <div id="home-wrapper" class="row">
       <Settings
         v-if="mode < 3"
         :mode="mode"
@@ -17,7 +17,7 @@
         :colorsList="colorsList"
         @selectedMode="setMode"
       />
-    </b-row>
+    </div>
   </section>
 </template>
 
