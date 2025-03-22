@@ -77,8 +77,8 @@
       class="d-inline-block"
     >
       <h2>
-        <span v-show="win">GAGNE</span>
-        <span v-show="selectedRow === settings.attempts">PERDU</span>
+        <span v-show="win">GAGNE !</span>
+        <span v-show="selectedRow === settings.attempts">PERDU !</span>
         <button
           v-if="!isPlaying"
           class="mt-2 ms-2 d-inline-block btn btn-primary"
@@ -98,7 +98,7 @@
         id="soluce"
       >
         <h3>Soluce</h3>
-        <div class="card one-row my-2">
+        <div class="card one-row mt-2 mb-4">
           <div class="card one-column">
             <div
               v-for="(one9, index9) in solucePlayer"

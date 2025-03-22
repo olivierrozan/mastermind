@@ -52,8 +52,6 @@
         v-model="settings.attempts"
         aria-label="attempts"
       >
-        <option selected :value="null" disabled>Open this select menu</option>
-
         <option
           v-for="(attempt, index) in AttemptsList"
           :key="index"
@@ -77,8 +75,6 @@
         aria-label="code width"
         @change="changeSoluce"
       >
-        <option selected :value="null" disabled>Open this select menu</option>
-
         <option
           v-for="(codeWidth, index) in codeWidthsList"
           :key="index"
@@ -198,7 +194,7 @@ export default {
     changeSoluce: function (data) {
       this.colorsList = [];
       
-      for (let j = 0; j < data; j++) {
+      for (let j = 0; j < data.target.value; j++) {
         this.colorsList.push(this.totalColorsList[j]);
       }
     },
