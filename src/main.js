@@ -1,18 +1,14 @@
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store";
-
+import { createApp, defineAsyncComponent } from 'vue';
 import "bootstrap/dist/css/bootstrap.css";
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-Vue.config.productionTip = false;
-Vue.prototype.$bootstrap = bootstrap;
+const App = defineAsyncComponent(() => import('@/App'));
+const app = createApp(App);
+const router = require('@/router').default;
 
-new Vue({
-  router,
-  store,
-  render: function (h) {
-    return h(App);
-  },
-}).$mount("#app");
+app.use(router);
+app.config.globalProperties.$bootstrap = bootstrap;
+
+router.isReady().then(() => {
+  app.mount('#app');
+});
