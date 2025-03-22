@@ -1,21 +1,16 @@
-import Vue from "vue";
-import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
+import { createWebHistory, createRouter } from 'vue-router';
+const Home = () => import(/* webpackChunkName: 'Home' */ '@/views/Home');
 
-Vue.use(VueRouter);
-
-const routes = [
-  {
-    path: "/",
-    name: "Home",
-    component: Home,
-  },
-];
-
-const router = new VueRouter({
-  mode: "history",
-  base: process.env.BASE_URL,
-  routes,
+const _router = createRouter({
+  history: createWebHistory(),
+  paramsInheritanceStrategy: 'always',
+  routes: [
+    {
+      path: "/",
+      name: "Home",
+      component: Home,
+    },
+  ]
 });
 
-export default router;
+export default _router;

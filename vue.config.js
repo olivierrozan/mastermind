@@ -1,11 +1,13 @@
+const webpack = require('webpack');
+
 module.exports = {
-  // lintOnSave: false,
-  // devServer: {
-  //   clientLogLevel: 'info',
-  //   useEslint: false,
-  //   overlay: {
-  //     warnings: false,
-  //     errors: false,
-  //   }
-  // }
-}
+  configureWebpack: {
+    plugins: [
+      // Define Bundler Build Feature Flags
+      new webpack.DefinePlugin({
+        // Drop Options API from bundle
+        __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
+      })
+    ]
+  }
+};
